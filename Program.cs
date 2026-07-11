@@ -1,4 +1,21 @@
+using dream_team.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+
+var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
+var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "5432";
+var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "dream_team";
+var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "postgres";
+var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "";
+var dbSslMode = Environment.GetEnvironmentVariable("DB_SSL_MODE") ?? "disable";
+var dbChannelBinding = Environment.GetEnvironmentVariable("DB_CHANNEL_BINDING") ?? "disable";
+
+var connectionString =
+    $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbPassword};"
+    + $"SSL Mode={dbSslMode};Trust Server Certificate=true;Channel Binding={dbChannelBinding}";
+
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -20,10 +37,7 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();
