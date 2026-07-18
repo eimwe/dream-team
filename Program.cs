@@ -20,6 +20,7 @@ var connectionString =
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 builder.Services.AddScoped<DbService>();
+builder.Services.AddScoped<UserService>();
 
 builder
     .Services.AddAuthentication(options =>
