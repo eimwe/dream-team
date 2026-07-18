@@ -15,11 +15,17 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<UserStatus>().HasIndex(u => u.UserId).IsUnique();
+        modelBuilder.Entity<UserStatus>().HasIndex(user => user.UserId).IsUnique();
 
         modelBuilder
             .Entity<UserOauth>()
-            .HasIndex(u => new { u.Provider, u.ProviderUid })
+            .HasIndex(account => new { account.Provider, account.ProviderUid })
             .IsUnique();
+
+        modelBuilder
+            .Entity<User>()
+            .HasOne(user => user.Status)
+            .WithOne()
+            .HasForeignKey<UserStatus>(status => status.UserId);
     }
 }
