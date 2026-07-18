@@ -44,6 +44,20 @@ builder
                 context.Response.Redirect(context.RedirectUri);
                 return Task.CompletedTask;
             },
+            OnRemoteFailure = context =>
+            {
+                var detail =
+                    context.Failure?.InnerException?.Message
+                    ?? context.Failure?.Message
+                    ?? "unknown";
+                Console.WriteLine($"GOOGLE REMOTE FAILURE: {detail}");
+                Console.WriteLine(
+                    $"  at failure: scheme={context.Request.Scheme} host={context.Request.Host} path={context.Request.Path}"
+                );
+                context.Response.Redirect("/Auth/Login?error=external");
+                context.HandleResponse();
+                return Task.CompletedTask;
+            },
         };
     })
     .AddDiscord(options =>
