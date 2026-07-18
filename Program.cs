@@ -35,12 +35,24 @@ builder
         options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID") ?? "";
         options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET") ?? "";
         options.SignInScheme = "External";
+        options.Events.OnRemoteFailure = context =>
+        {
+            context.Response.Redirect("/Auth/Login?error=external");
+            context.HandleResponse();
+            return Task.CompletedTask;
+        };
     })
     .AddDiscord(options =>
     {
         options.ClientId = Environment.GetEnvironmentVariable("DISCORD_CLIENT_ID") ?? "";
         options.ClientSecret = Environment.GetEnvironmentVariable("DISCORD_CLIENT_SECRET") ?? "";
         options.SignInScheme = "External";
+        options.Events.OnRemoteFailure = context =>
+        {
+            context.Response.Redirect("/Auth/Login?error=external");
+            context.HandleResponse();
+            return Task.CompletedTask;
+        };
     });
 
 builder.Services.AddControllersWithViews(options =>
