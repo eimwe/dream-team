@@ -1,0 +1,15 @@
+@model dream_team.Models.ViewModels.AuthViewModel
+
+<div class="d-flex flex-column align-items-center justify-content-center text-center">
+    <h2 class="mb-4">Sign in to dream_team</h2>
+
+    @if (Model.ErrorMessage != null)
+    {
+        <p class="text-danger">@Model.ErrorMessage</p>
+    }
+
+    <div class="d-flex flex-column flex-sm-row gap-2">
+        <a asp-action="ExternalLogin" asp-route-provider="Google" class="btn btn-primary">Sign in with Google</a>
+        <a asp-action="ExternalLogin" asp-route-provider="Discord" class="btn btn-secondary">Sign in with Discord</a>
+    </div>
+</div>
