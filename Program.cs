@@ -81,15 +81,9 @@ app.UseForwardedHeaders(forwardedHeadersOptions);
 app.Use(
     async (context, next) =>
     {
-        if (
-            context.Request.Path.StartsWithSegments("/signin-google")
-            || context.Request.Path.StartsWithSegments("/signin-discord")
-        )
-        {
-            Console.WriteLine(
-                $"Callback scheme: {context.Request.Scheme}, host: {context.Request.Host}, path: {context.Request.Path}"
-            );
-        }
+        Console.WriteLine(
+            $"REQ: {context.Request.Method} {context.Request.Path} scheme={context.Request.Scheme}"
+        );
         await next();
     }
 );
