@@ -1,6 +1,7 @@
 using dream_team.Data;
 using dream_team.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,14 +36,14 @@ builder
         options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID") ?? "";
         options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET") ?? "";
         options.SignInScheme = "External";
-        options.Events.OnRemoteFailure = context =>
+        options.Events = new OAuthEvents
         {
-            var detail =
-                context.Failure?.InnerException?.Message ?? context.Failure?.Message ?? "unknown";
-            Console.WriteLine($"OAuth remote failure: {detail}");
-            context.Response.Redirect("/Auth/Login?error=external");
-            context.HandleResponse();
-            return Task.CompletedTask;
+            OnRedirectToAuthorizationEndpoint = context =>
+            {
+                Console.WriteLine($"Google authorize URL: {context.RedirectUri}");
+                context.Response.Redirect(context.RedirectUri);
+                return Task.CompletedTask;
+            },
         };
     })
     .AddDiscord(options =>
