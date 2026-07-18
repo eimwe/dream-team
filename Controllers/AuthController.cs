@@ -17,14 +17,21 @@ public class AuthController : Controller
     }
 
     [HttpGet]
-    public IActionResult Login()
+    public IActionResult Login(string? error)
     {
         if (User.Identity?.IsAuthenticated == true)
         {
             return RedirectToAction("Index", "Home");
         }
 
-        return View(new AuthViewModel());
+        var model = new AuthViewModel();
+
+        if (error == "external")
+        {
+            model.ErrorMessage = "Sign-in failed. Please try again.";
+        }
+
+        return View(model);
     }
 
     [HttpGet]
