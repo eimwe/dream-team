@@ -37,6 +37,9 @@ builder
         options.SignInScheme = "External";
         options.Events.OnRemoteFailure = context =>
         {
+            var detail =
+                context.Failure?.InnerException?.Message ?? context.Failure?.Message ?? "unknown";
+            Console.WriteLine($"OAuth remote failure: {detail}");
             context.Response.Redirect("/Auth/Login?error=external");
             context.HandleResponse();
             return Task.CompletedTask;
@@ -49,6 +52,9 @@ builder
         options.SignInScheme = "External";
         options.Events.OnRemoteFailure = context =>
         {
+            var detail =
+                context.Failure?.InnerException?.Message ?? context.Failure?.Message ?? "unknown";
+            Console.WriteLine($"OAuth remote failure: {detail}");
             context.Response.Redirect("/Auth/Login?error=external");
             context.HandleResponse();
             return Task.CompletedTask;
