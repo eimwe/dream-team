@@ -23,4 +23,14 @@ public class HomeController : Controller
             new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier }
         );
     }
+
+    public IActionResult HeaderCheck()
+    {
+        var proto = Request.Headers["X-Forwarded-Proto"].ToString();
+        var forwardedFor = Request.Headers["X-Forwarded-For"].ToString();
+        var scheme = Request.Scheme;
+        return Content(
+            $"X-Forwarded-Proto: '{proto}' | X-Forwarded-For: '{forwardedFor}' | Request.Scheme (post-middleware): '{scheme}'"
+        );
+    }
 }
