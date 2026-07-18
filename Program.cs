@@ -78,6 +78,22 @@ forwardedHeadersOptions.KnownProxies.Clear();
 
 app.UseForwardedHeaders(forwardedHeadersOptions);
 
+app.Use(
+    async (context, next) =>
+    {
+        if (
+            context.Request.Path.StartsWithSegments("/signin-google")
+            || context.Request.Path.StartsWithSegments("/signin-discord")
+        )
+        {
+            Console.WriteLine(
+                $"Callback scheme: {context.Request.Scheme}, host: {context.Request.Host}, path: {context.Request.Path}"
+            );
+        }
+        await next();
+    }
+);
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
