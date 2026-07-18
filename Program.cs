@@ -1,4 +1,5 @@
 using dream_team.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,26 @@ var connectionString =
     + $"SSL Mode={dbSslMode};Trust Server Certificate=true;Channel Binding={dbChannelBinding}";
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+
+builder
+    .Services.AddAuthentication(options =>
+    {
+        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    })
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie("External")
+    .AddGoogle(options =>
+    {
+        options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID") ?? "";
+        options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET") ?? "";
+        options.SignInScheme = "External";
+    })
+    .AddDiscord(options =>
+    {
+        options.ClientId = Environment.GetEnvironmentVariable("DISCORD_CLIENT_ID") ?? "";
+        options.ClientSecret = Environment.GetEnvironmentVariable("DISCORD_CLIENT_SECRET") ?? "";
+        options.SignInScheme = "External";
+    });
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
