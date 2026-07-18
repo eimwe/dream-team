@@ -1,4 +1,5 @@
 using dream_team.Data;
+using dream_team.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,7 @@ var connectionString =
     + $"SSL Mode={dbSslMode};Trust Server Certificate=true;Channel Binding={dbChannelBinding}";
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+builder.Services.AddScoped<DbService>();
 
 builder
     .Services.AddAuthentication(options =>
