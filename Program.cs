@@ -1,6 +1,7 @@
 using dream_team.Data;
 using dream_team.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -48,6 +49,13 @@ builder.Services.AddControllersWithViews(options =>
 });
 
 var app = builder.Build();
+
+app.UseForwardedHeaders(
+    new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+    }
+);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
