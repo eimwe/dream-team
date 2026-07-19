@@ -82,7 +82,10 @@ builder.Services.AddControllersWithViews(options =>
 var app = builder.Build();
 
 app.UseForwardedHeaders(
-    new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.XForwardedFor }
+    new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedHost,
+    }
 );
 
 // Configure the HTTP request pipeline.
