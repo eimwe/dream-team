@@ -30,13 +30,7 @@ builder
         options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     })
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(
-        "External",
-        options =>
-        {
-            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        }
-    )
+    .AddCookie("External")
     .AddGoogle(options =>
     {
         options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID") ?? "";
