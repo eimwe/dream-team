@@ -93,6 +93,16 @@ var forwardedHeadersOptions = new ForwardedHeadersOptions
 forwardedHeadersOptions.KnownIPNetworks.Clear();
 forwardedHeadersOptions.KnownProxies.Clear();
 
+app.Use(
+    (context, next) =>
+    {
+        Console.WriteLine(
+            $"ENTRY: {context.Request.Method} {context.Request.Path} scheme={context.Request.Scheme}"
+        );
+        return next();
+    }
+);
+
 app.UseForwardedHeaders(forwardedHeadersOptions);
 
 if (!app.Environment.IsDevelopment())
@@ -101,6 +111,9 @@ if (!app.Environment.IsDevelopment())
         (context, next) =>
         {
             context.Request.Scheme = "https";
+            Console.WriteLine(
+                $"AFTER-OVERRIDE: {context.Request.Path} scheme={context.Request.Scheme}"
+            );
             return next();
         }
     );
