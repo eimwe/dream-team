@@ -26,9 +26,13 @@ public class AuthController : Controller
 
         var model = new AuthViewModel();
 
-        if (error == "external")
+        if (
+            Request.Cookies.TryGetValue("AuthErrorHint", out var errorType)
+            && errorType == "external"
+        )
         {
             model.ErrorMessage = "Sign-in failed. Please try again.";
+            Response.Cookies.Delete("AuthErrorHint");
         }
 
         return View(model);
