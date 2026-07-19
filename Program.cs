@@ -24,26 +24,46 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connect
 builder.Services.AddScoped<DbService>();
 builder.Services.AddScoped<UserService>();
 
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.CheckConsentNeeded = context => true;
+    options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
+});
+
 builder
     .Services.AddAuthentication(options =>
     {
         options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     })
-    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie("External")
+    .AddCookie(
+        CookieAuthenticationDefaults.AuthenticationScheme,
+        options =>
+        {
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        }
+    )
+    .AddCookie(
+        "External",
+        options =>
+        {
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        }
+    )
     .AddGoogle(options =>
     {
         options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID") ?? "";
         options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET") ?? "";
         options.SignInScheme = "External";
+        options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
         options.Events = new OAuthEvents
         {
-            OnRedirectToAuthorizationEndpoint = context =>
+            /*OnRedirectToAuthorizationEndpoint = context =>
             {
                 Console.WriteLine($"Google authorize URL: {context.RedirectUri}");
                 context.Response.Redirect(context.RedirectUri);
+                context.HandleResponse();
                 return Task.CompletedTask;
-            },
+            },*/
             OnRemoteFailure = context =>
             {
                 var detail =
@@ -94,18 +114,18 @@ forwardedHeadersOptions.KnownIPNetworks.Clear();
 forwardedHeadersOptions.KnownProxies.Clear();
 
 app.Use(
-    (context, next) =>
+    async (context, next) =>
     {
         Console.WriteLine(
             $"ENTRY: {context.Request.Method} {context.Request.Path} scheme={context.Request.Scheme}"
         );
-        return next();
+        await next();
     }
 );
 
 app.UseForwardedHeaders(forwardedHeadersOptions);
 
-if (!app.Environment.IsDevelopment())
+/*if (!app.Environment.IsDevelopment())
 {
     app.Use(
         (context, next) =>
@@ -117,7 +137,7 @@ if (!app.Environment.IsDevelopment())
             return next();
         }
     );
-}
+}*/
 
 app.Use(
     async (context, next) =>
@@ -139,7 +159,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
