@@ -21,7 +21,9 @@ public class AuthController : Controller
     {
         if (User.Identity?.IsAuthenticated == true)
         {
-            return RedirectToAction("Index", "Home");
+            return User.IsInRole("administrator")
+                ? RedirectToAction("Index", "Users")
+                : RedirectToAction("Index", "Home");
         }
 
         var model = new AuthViewModel();
