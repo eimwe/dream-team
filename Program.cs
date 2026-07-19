@@ -28,13 +28,7 @@ builder
     {
         options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     })
-    .AddCookie(
-        CookieAuthenticationDefaults.AuthenticationScheme,
-        options =>
-        {
-            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        }
-    )
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(
         "External",
         options =>
