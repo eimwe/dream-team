@@ -1,7 +1,6 @@
 using dream_team.Data;
 using dream_team.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -55,29 +54,11 @@ builder
         options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET") ?? "";
         options.SignInScheme = "External";
         options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.Events = new OAuthEvents
+        options.Events.OnRemoteFailure = context =>
         {
-            /*OnRedirectToAuthorizationEndpoint = context =>
-            {
-                Console.WriteLine($"Google authorize URL: {context.RedirectUri}");
-                context.Response.Redirect(context.RedirectUri);
-                context.HandleResponse();
-                return Task.CompletedTask;
-            },*/
-            OnRemoteFailure = context =>
-            {
-                var detail =
-                    context.Failure?.InnerException?.Message
-                    ?? context.Failure?.Message
-                    ?? "unknown";
-                Console.WriteLine($"GOOGLE REMOTE FAILURE: {detail}");
-                Console.WriteLine(
-                    $"  at failure: scheme={context.Request.Scheme} host={context.Request.Host} path={context.Request.Path}"
-                );
-                context.Response.Redirect("/Auth/Login?error=external");
-                context.HandleResponse();
-                return Task.CompletedTask;
-            },
+            context.Response.Redirect("/Auth/Login?error=external");
+            context.HandleResponse();
+            return Task.CompletedTask;
         };
     })
     .AddDiscord(options =>
@@ -87,9 +68,6 @@ builder
         options.SignInScheme = "External";
         options.Events.OnRemoteFailure = context =>
         {
-            var detail =
-                context.Failure?.InnerException?.Message ?? context.Failure?.Message ?? "unknown";
-            Console.WriteLine($"OAuth remote failure: {detail}");
             context.Response.Redirect("/Auth/Login?error=external");
             context.HandleResponse();
             return Task.CompletedTask;
@@ -124,30 +102,6 @@ app.Use(
 );
 
 app.UseForwardedHeaders(forwardedHeadersOptions);
-
-/*if (!app.Environment.IsDevelopment())
-{
-    app.Use(
-        (context, next) =>
-        {
-            context.Request.Scheme = "https";
-            Console.WriteLine(
-                $"AFTER-OVERRIDE: {context.Request.Path} scheme={context.Request.Scheme}"
-            );
-            return next();
-        }
-    );
-}*/
-
-app.Use(
-    async (context, next) =>
-    {
-        Console.WriteLine(
-            $"REQ: {context.Request.Method} {context.Request.Path} scheme={context.Request.Scheme} host={context.Request.Host}"
-        );
-        await next();
-    }
-);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
