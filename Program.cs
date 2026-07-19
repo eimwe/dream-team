@@ -84,7 +84,10 @@ var app = builder.Build();
 app.UseForwardedHeaders(
     new ForwardedHeadersOptions
     {
-        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedHost,
+        ForwardedHeaders =
+            ForwardedHeaders.XForwardedFor
+            | ForwardedHeaders.XForwardedProto
+            | ForwardedHeaders.XForwardedHost,
     }
 );
 
