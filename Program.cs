@@ -1,5 +1,6 @@
 using dream_team.Data;
 using dream_team.Services;
+using dream_team.Utilities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
@@ -41,24 +42,14 @@ builder
         options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID") ?? "";
         options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET") ?? "";
         options.SignInScheme = "External";
-        options.Events.OnRemoteFailure = context =>
-        {
-            context.Response.Redirect("/Auth/Login?error=external");
-            context.HandleResponse();
-            return Task.CompletedTask;
-        };
+        options.Events.OnRemoteFailure = AuthHelpers.HandleRemoteFailure;
     })
     .AddDiscord(options =>
     {
         options.ClientId = Environment.GetEnvironmentVariable("DISCORD_CLIENT_ID") ?? "";
         options.ClientSecret = Environment.GetEnvironmentVariable("DISCORD_CLIENT_SECRET") ?? "";
         options.SignInScheme = "External";
-        options.Events.OnRemoteFailure = context =>
-        {
-            context.Response.Redirect("/Auth/Login?error=external");
-            context.HandleResponse();
-            return Task.CompletedTask;
-        };
+        options.Events.OnRemoteFailure = AuthHelpers.HandleRemoteFailure;
     });
 
 builder.Services.AddControllersWithViews(options =>
