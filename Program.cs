@@ -23,12 +23,6 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connect
 builder.Services.AddScoped<DbService>();
 builder.Services.AddScoped<UserService>();
 
-builder.Services.Configure<CookiePolicyOptions>(options =>
-{
-    options.CheckConsentNeeded = context => true;
-    options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
-});
-
 builder
     .Services.AddAuthentication(options =>
     {
@@ -53,7 +47,6 @@ builder
         options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID") ?? "";
         options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET") ?? "";
         options.SignInScheme = "External";
-        options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
         options.Events.OnRemoteFailure = context =>
         {
             context.Response.Redirect("/Auth/Login?error=external");
