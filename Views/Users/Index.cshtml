@@ -1,0 +1,104 @@
+@using dream_team.Models.ViewModels
+@model UsersViewModel
+@{ ViewData["Title"] = "Users"; }
+
+@if (Model.StatusMessage != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @Model.StatusMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<form method="post" id="mainForm">
+    @Html.AntiForgeryToken()
+    <div class="d-flex gap-2 mb-3">
+        <button type="submit" formaction="/Users/Block" class="btn btn-outline-danger toolbar-btn" disabled>
+            <i class="bi bi-lock-fill"></i> Block
+        </button>
+        <button type="submit" formaction="/Users/Unblock" class="btn btn-outline-success toolbar-btn" disabled>
+            <i class="bi bi-unlock-fill"></i>
+        </button>
+        <button type="submit" formaction="/Users/Delete" class="btn btn-outline-secondary toolbar-btn" disabled>
+            <i class="bi bi-trash-fill"></i>
+        </button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th style="width: 40px;" class="text-center"><input type="checkbox" class="form-check-input" id="selectAll"></th>
+                    <th>Name</th>
+                    <th>Login</th>
+                    <th>Status</th>
+                    <th>Roles</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td class="text-center"><input type="checkbox" class="form-check-input row-checkbox" value="@user.Id"></td>
+                        <td>@user.FullName</td>
+                        <td>@user.Login</td>
+                        <td>
+                            @{ var badgeClass = user.Status?.Status == "blocked" ? "bg-danger" : "bg-success"; }
+                            <span class="badge @badgeClass">@(user.Status?.Status ?? "unknown")</span>
+                        </td>
+                        <td>@string.Join(", ", user.Roles.Select(r => r.Role))</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+    document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        .forEach(el => new bootstrap.Tooltip(el));
+
+    const selectAll = document.getElementById('selectAll');
+    const form      = document.getElementById('mainForm');
+
+    function getSelectedIds() {
+        return [...document.querySelectorAll('.row-checkbox:checked')]
+            .map(cb => cb.value);
+    }
+
+    function getUniqIdValue() {
+        return [...new Set(getSelectedIds())];
+    }
+
+    function updateToolbar() {
+        const count = getSelectedIds().length;
+        const total = document.querySelectorAll('.row-checkbox').length;
+
+        document.querySelectorAll('.toolbar-btn').forEach(btn => btn.disabled = count === 0);
+
+        selectAll.indeterminate = count > 0 && count < total;
+        selectAll.checked       = count > 0 && count === total;
+    }
+
+    selectAll.addEventListener('change', function () {
+        document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = this.checked);
+        updateToolbar();
+    });
+
+    document.querySelectorAll('.row-checkbox').forEach(cb => cb.addEventListener('change', updateToolbar));
+
+    form.addEventListener('submit', function () {
+        form.querySelectorAll('.selected-id-input').forEach(el => el.remove());
+
+        getUniqIdValue().forEach(id => {
+            const input    = document.createElement('input');
+            input.type     = 'hidden';
+            input.name     = 'ids';
+            input.value    = id;
+            input.className = 'selected-id-input';
+            form.appendChild(input);
+        });
+    });
+</script>
+}
