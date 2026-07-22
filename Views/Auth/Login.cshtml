@@ -8,8 +8,32 @@
         <p class="text-danger">@Model.ErrorMessage</p>
     }
 
-    <div class="d-flex flex-column flex-sm-row gap-2">
-        <a asp-action="ExternalLogin" asp-route-provider="Google" class="btn btn-primary">Sign in with Google</a>
-        <a asp-action="ExternalLogin" asp-route-provider="Discord" class="btn btn-secondary">Sign in with Discord</a>
+    <div class="row w-100 justify-content-center align-items-center gy-4" style="max-width: 640px;">
+        <div class="col-12 col-md-5">
+            <div class="d-flex flex-column gap-2">
+                <a asp-action="ExternalLogin" asp-route-provider="Google" class="btn btn-primary">Sign in with Google</a>
+                <a asp-action="ExternalLogin" asp-route-provider="Discord" class="btn btn-secondary">Sign in with Discord</a>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-2 text-muted">
+            <hr class="d-md-none">
+            <span>or</span>
+            <hr class="d-none d-md-block">
+        </div>
+
+        <div class="col-12 col-md-5">
+            <form method="post" asp-controller="Auth" asp-action="Login" class="text-start">
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input asp-for="Login" class="form-control" type="text" placeholder="Username" autocomplete="username">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input asp-for="Password" class="form-control" type="password">
+                </div>
+                <button type="submit" class="btn btn-outline-primary w-100">Sign In</button>
+            </form>
+        </div>
     </div>
 </div>
