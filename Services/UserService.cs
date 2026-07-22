@@ -80,4 +80,21 @@ public class UserService
     {
         return new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
     }
+
+    public async Task<User?> AuthWithPassword(string login, string password)
+    {
+        var user = await _db
+            .Users.Include(user => user.Roles)
+            .Include(user => user.Status)
+            .FirstOrDefaultAsync(user => user.Login == login);
+
+        return (
+            user?.Password == null
+            || !BCrypt.Net.BCrypt.Verify(password, user.Password)
+            || user.Roles.All(role => role.Role != "administrator")
+            || user.Status?.Status == "blocked"
+        )
+            ? null
+            : user;
+    }
 }
