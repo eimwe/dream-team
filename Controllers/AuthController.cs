@@ -36,6 +36,34 @@ public class AuthController : Controller
         return View(model);
     }
 
+    [HttpPost]
+    public async Task<IActionResult> Login(AuthViewModel model)
+    {
+        if (string.IsNullOrWhiteSpace(model.Login) || string.IsNullOrWhiteSpace(model.Password))
+        {
+            model.ErrorMessage = "Please enter both login and password.";
+            return View(model);
+        }
+
+        var user = await _userService.AuthWithPassword(model.Login, model.Password);
+
+        if (user == null)
+        {
+            model.ErrorMessage = "Invalid login or password";
+            return View(model);
+        }
+
+        var claims = await _userService.CreateClaims(user);
+        var identity = _userService.CreateIdentity(claims);
+
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            new ClaimsPrincipal(identity)
+        );
+
+        return RedirectToAction("Index", "Users");
+    }
+
     [HttpGet]
     public IActionResult ExternalLogin(string provider)
     {
