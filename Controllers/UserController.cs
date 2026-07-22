@@ -6,12 +6,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace dream_team.Controllers;
 
-[Authorize]
-public class UserController : Controller
+[Authorize(Roles = "administrator")]
+public class UsersController : Controller
 {
     private readonly AppDbContext _db;
 
-    public UserController(AppDbContext db)
+    public UsersController(AppDbContext db)
     {
         _db = db;
     }
