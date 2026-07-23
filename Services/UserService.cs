@@ -36,16 +36,16 @@ public class UserService
 
     public async Task<User?> FindUser(AuthenticateResult result)
     {
-        var (Provider, ProviderUid) = GetUserProvider(result);
+        var (provider, providerUid) = GetUserProvider(result);
 
-        var oauthAccount = await _dbService.GetOauthAccount(Provider, ProviderUid);
+        var oauthAccount = await _dbService.GetOauthAccount(provider, providerUid);
 
-        if (oauthAccount == null)
-        {
-            return null;
-        }
+        return oauthAccount == null ? null : await FindUser(oauthAccount.UserId);
+    }
 
-        return await _db.Users.FirstAsync(user => user.Id == oauthAccount.UserId);
+    public async Task<User?> FindUser(int userId)
+    {
+        return await _db.Users.FirstOrDefaultAsync(user => user.Id == userId);
     }
 
     public async Task<User> CreateUser(AuthenticateResult result)
