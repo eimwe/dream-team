@@ -42,4 +42,16 @@ public static class AuthHelpers
 
         return claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "administrator");
     }
+
+    public static bool IsOwner(this ClaimsPrincipal user, int ownerId)
+    {
+        if (user.IsInRole("administrator"))
+        {
+            return true;
+        }
+
+        var currentUserIdClaim = user.FindFirstValue("userId");
+
+        return int.TryParse(currentUserIdClaim, out var currentUserId) && currentUserId == ownerId;
+    }
 }
