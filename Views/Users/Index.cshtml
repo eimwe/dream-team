@@ -12,15 +12,29 @@
 
 <form method="post" id="mainForm">
     @Html.AntiForgeryToken()
-    <div class="d-flex gap-2 mb-3">
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
         <button type="submit" formaction="/Users/Block" class="btn btn-outline-danger toolbar-btn" disabled>
             <i class="bi bi-lock-fill"></i> Block
         </button>
         <button type="submit" formaction="/Users/Unblock" class="btn btn-outline-success toolbar-btn" disabled>
-            <i class="bi bi-unlock-fill"></i>
+            <i class="bi bi-unlock-fill"></i> Unblock
         </button>
         <button type="submit" formaction="/Users/Delete" class="btn btn-outline-secondary toolbar-btn" disabled>
-            <i class="bi bi-trash-fill"></i>
+            <i class="bi bi-trash-fill"></i> Delete
+        </button>
+
+        <div class="vr mx-1 d-none d-sm-block"></div>
+
+        <select name="role" id="roleSelect" class="form-select form-select-sm w-auto">
+            <option value="candidate">candidate</option>
+            <option value="recruiter">recruiter</option>
+            <option value="administrator">administrator</option>
+        </select>
+        <button type="submit" formaction="/Users/AddRole" class="btn btn-outline-primary toolbar-btn" disabled>
+            <i class="bi bi-person-plus-fill"></i> Add Role
+        </button>
+        <button type="submit" formaction="/Users/RemoveRole" class="btn btn-outline-danger toolbar-btn" disabled>
+            <i class="bi bi-person-dash-fill"></i> Remove Role
         </button>
     </div>
 
