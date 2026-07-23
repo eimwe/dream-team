@@ -48,6 +48,13 @@ public class UserService
         return await _db.Users.FirstOrDefaultAsync(user => user.Id == userId);
     }
 
+    public int? GetCurrentUserId(ClaimsPrincipal principal)
+    {
+        var userIdClaim = principal.FindFirstValue("userId");
+
+        return int.TryParse(userIdClaim, out var userId) ? userId : null;
+    }
+
     public async Task<User> CreateUser(AuthenticateResult result)
     {
         var (Provider, ProviderUid) = GetUserProvider(result);
